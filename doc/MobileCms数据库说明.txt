@@ -1,0 +1,218 @@
+MobileCms数据库说明
+//入口
+CREATE TABLE `ria_access` (
+  `role_id` int(5) NOT NULL COMMET '角色ID',
+  `node_id` int(5) NOT NULL COMMET '节点ID',
+  KEY `role_id` (`role_id`),
+  KEY `node_id` (`node_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+//广告
+CREATE TABLE `ria_ad` (
+  `id` smallint(5) NOT NULL AUTO_INCREMENT COMMET '号',
+  `board_id` smallint(5) NOT NULL COMMET '板ID',
+  `type` varchar(20) NOT NULL COMMET '类型',
+  `name` varchar(50) NOT NULL COMMET '名',
+  `url` varchar(255) NOT NULL COMMET '网址',
+  `code` text NOT NULL COMMET '代码',
+  `start_time` int(10) NOT NULL COMMET '开始时间',
+  `end_time` int(10) NOT NULL COMMET '结束时间',
+  `clicks` int(10) NOT NULL DEFAULT '0' COMMET '点击',
+  `add_time` int(10) NOT NULL COMMET '添加时间',
+  `ordid` int(10) NOT NULL COMMET '顺序',
+  `status` tinyint(1) NOT NULL DEFAULT '1' COMMET '状态',
+  PRIMARY KEY (`id`),
+  KEY `board_id` (`board_id`,`start_time`,`end_time`,`status`)
+) ENGINE=MyISAM AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
+//广告板
+CREATE TABLE `ria_adboard` (
+  `id` smallint(5) NOT NULL AUTO_INCREMENT COMMET '号',
+  `name` varchar(50) NOT NULL COMMET '名',
+  `type` varchar(20) NOT NULL COMMET '类型',
+  `width` smallint(5) NOT NULL COMMET '宽',
+  `height` smallint(5) NOT NULL COMMET '高',
+  `description` varchar(255) NOT NULL COMMET '描述',
+  `status` tinyint(1) NOT NULL DEFAULT '0' COMMET '状态',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
+//管理
+CREATE TABLE `ria_admin` (
+  `id` int(10) NOT NULL AUTO_INCREMENT COMMET '号',
+  `user_name` varchar(50) NOT NULL COMMET '用户名',
+  `password` varchar(100) NOT NULL COMMET '密码',
+  `add_time` int(10) DEFAULT NULL COMMET '添加时间',
+  `last_time` int(10) DEFAULT NULL COMMET '上次时间',
+  `status` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMET '状态',
+  `role_id` int(10) NOT NULL COMMET '角色ID',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+//文章
+CREATE TABLE `ria_article` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMET '文章类', 
+  `cate_id` tinyint(4) unsigned NOT NULL COMMET 'ID',
+  `title` varchar(255) NOT NULL COMMET '标题',
+  `orig` varchar(255) NOT NULL COMMET '★',
+  `img` varchar(255) NOT NULL COMMET '图片',
+  `url` varchar(255) NOT NULL COMMET '网址',
+  `abst` varchar(255) NOT NULL COMMET '★',
+  `info` mediumtext NOT NULL COMMET '信息',
+  `add_time` datetime NOT NULL COMMET '添添加时间',
+  `ordid` tinyint(4) NOT NULL COMMET '排序',
+  `is_hot` tinyint(1) NOT NULL DEFAULT '0' COMMET '为热门',
+  `is_best` tinyint(1) NOT NULL DEFAULT '0' COMMET '为推荐',
+  `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '状态 0-待审核 1-已审核',
+  `seo_title` varchar(255) NOT NULL COMMET 'SEO标题',
+  `seo_keys` varchar(255) NOT NULL COMMET 'SEO关键字',
+  `seo_desc` text NOT NULL COMMET 'SEO描述',
+  PRIMARY KEY (`id`),
+  KEY `is_best` (`is_best`),
+  KEY `add_time` (`add_time`),
+  KEY `cate_id` (`cate_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=24 DEFAULT CHARSET=utf8;
+//文章分类  pid等于0就是导航栏的根栏
+CREATE TABLE `ria_article_cate` (
+  `id` smallint(4) unsigned NOT NULL AUTO_INCREMENT COMMET '文章分类', 
+  `name` varchar(100) NOT NULL COMMET '名',
+  `alias` varchar(50) NOT NULL COMMET '别名',
+  `pid` smallint(4) unsigned NOT NULL COMMET '父ID',
+  `status` tinyint(1) NOT NULL DEFAULT '1' COMMET '状态',
+  `article_nums` int(10) unsigned NOT NULL COMMET '文章数',
+  `sort_order` smallint(4) unsigned NOT NULL COMMET '排序',
+  `seo_title` varchar(255) NOT NULL COMMET 'SEO标题',
+  `seo_keys` varchar(255) NOT NULL COMMET 'SEO关键字',
+  `seo_desc` text NOT NULL COMMET 'SEO描述',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=27 DEFAULT CHARSET=utf8;
+//友情链接
+CREATE TABLE `ria_flink` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMET '号',
+  `cate_id` smallint(4) NOT NULL DEFAULT '1' COMMET '★',
+  `img` varchar(255) DEFAULT NULL COMMET '图片',
+  `name` varchar(100) NOT NULL COMMET '名',
+  `url` varchar(255) NOT NULL COMMET '网址',
+  `status` tinyint(1) NOT NULL DEFAULT '0' COMMET '状态',
+  `ordid` smallint(5) NOT NULL COMMET '排序',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+//友情链接分类
+CREATE TABLE `ria_flink_cate` (
+  `id` smallint(4) NOT NULL AUTO_INCREMENT COMMET '号',
+  `name` varchar(255) NOT NULL COMMET '名',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+//组
+CREATE TABLE `ria_group` (
+  `id` smallint(3) unsigned NOT NULL AUTO_INCREMENT COMMET '号',
+  `name` varchar(25) NOT NULL COMMET '名',
+  `title` varchar(50) NOT NULL COMMET '标题',
+  `create_time` int(11) unsigned NOT NULL COMMET '创建时间',
+  `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMET '更新时间',
+  `status` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMET '状态',
+  `sort` smallint(3) unsigned NOT NULL DEFAULT '0' COMMET '排序',
+  PRIMARY KEY (`id`),
+  KEY `status` (`status`),
+  KEY `sort` (`sort`)
+) ENGINE=MyISAM AUTO_INCREMENT=29 DEFAULT CHARSET=utf8;
+//导航
+CREATE TABLE `ria_nav` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMET '号',
+  `name` varchar(255) NOT NULL COMMET '名',
+  `alias` varchar(50) NOT NULL COMMET '别名',
+  `url` varchar(255) NOT NULL COMMET '网址',
+  `sort_order` smallint(4) NOT NULL COMMET '排序',
+  `system` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1-系统 0-自定义',
+  `type` tinyint(1) NOT NULL DEFAULT '1' COMMENT '导航位置1-顶部 2-底部',
+  `in_site` tinyint(1) NOT NULL COMMENT '1-本站内 0-站外',
+  `is_show` tinyint(1) NOT NULL DEFAULT '1' COMMET '为显示',
+  `seo_title` varchar(255) NOT NULL COMMET 'SEO标题',
+  `seo_keys` text NOT NULL COMMET 'SEO关键字',
+  `seo_desc` text NOT NULL COMMET 'SEO描述',
+  `items_cate_id` int(11) DEFAULT NULL COMMENT '//分类id',
+  PRIMARY KEY (`id`),
+  KEY `is_show` (`is_show`),
+  KEY `type` (`type`),
+  KEY `sort_order` (`sort_order`),
+  KEY `alias` (`alias`)
+) ENGINE=MyISAM AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
+//节点
+CREATE TABLE `ria_node` (
+  `id` smallint(6) unsigned NOT NULL AUTO_INCREMENT COMMET '号',
+  `module` varchar(255) NOT NULL COMMET '模块',
+  `module_name` varchar(50) NOT NULL COMMET '模块名称',
+  `action` varchar(255) NOT NULL COMMET '动作',
+  `action_name` varchar(50) DEFAULT NULL COMMET '动作名',
+  `data` varchar(255) DEFAULT NULL COMMET '数据',
+  `status` tinyint(1) DEFAULT '0' COMMET '状态',
+  `remark` varchar(255) DEFAULT NULL COMMET '备注',
+  `sort` smallint(6) unsigned NOT NULL DEFAULT '0' COMMET '排序',
+  `auth_type` tinyint(1) NOT NULL DEFAULT '0' COMMET '可靠类型',
+  `group_id` tinyint(3) unsigned DEFAULT '0' COMMET '组ID',
+  `often` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0-不常用 1-常用',
+  `is_show` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0-不常用 1-常用',
+  PRIMARY KEY (`id`),
+  KEY `status` (`status`),
+  KEY `module` (`module`),
+  KEY `auth_type` (`auth_type`),
+  KEY `is_show` (`is_show`),
+  KEY `group_id` (`group_id`),
+  KEY `sort` (`sort`)
+) ENGINE=MyISAM AUTO_INCREMENT=158 DEFAULT CHARSET=utf8;
+//用户
+CREATE TABLE `ria_role` (
+  `id` smallint(6) unsigned NOT NULL AUTO_INCREMENT COMMET '号',
+  `name` varchar(20) NOT NULL COMMET '名',
+  `status` tinyint(1) unsigned DEFAULT NULL COMMET '状态',
+  `remark` varchar(255) DEFAULT NULL COMMET '备注',
+  `create_time` int(11) unsigned NOT NULL COMMET '创建时间',
+  `update_time` int(11) unsigned NOT NULL COMMET '更新时间',
+  PRIMARY KEY (`id`),
+  KEY `status` (`status`)
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+//商品分类
+CREATE TABLE `ria_seller_cate` (
+  `id` int(8) NOT NULL AUTO_INCREMENT COMMET '号',
+  `cid` int(8) NOT NULL COMMET '建ID',
+  `name` varchar(200) NOT NULL COMMET '名',
+  `count` int(8) NOT NULL COMMET '数量',
+  `seller_status` int(1) NOT NULL DEFAULT '1' COMMET '商品状态',
+  `status` int(1) NOT NULL COMMET '状态',
+  `sort` int(6) NOT NULL COMMET '排序',
+  PRIMARY KEY (`id`),
+  KEY `cid` (`cid`),
+  KEY `index_status` (`status`)
+) ENGINE=MyISAM AUTO_INCREMENT=123 DEFAULT CHARSET=utf8;
+//商家列表
+CREATE TABLE `ria_seller_list` (
+  `id` int(8) NOT NULL AUTO_INCREMENT COMMET '号',
+  `sid` int(8) NOT NULL COMMET 'ID',
+  `cate_id` int(8) NOT NULL COMMET '号',
+  `name` varchar(200) NOT NULL COMMET '名',
+  `site_logo` varchar(200) DEFAULT NULL COMMET '本　地LOGO',
+  `net_logo` varchar(200) NOT NULL COMMET '网　络LOGO',
+  `recommend` int(1) NOT NULL COMMET '推荐',
+  `click_url` varchar(400) NOT NULL COMMET '跳转网址',
+  `sort` int(6) NOT NULL COMMET '排序',
+  `description` varchar(200) NOT NULL COMMET '商家描述',
+  `freeshipment` int(1) NOT NULL COMMET '免费送货',
+  `installment` int(1) NOT NULL COMMET '分期付款',
+  `has_invoice` int(1) NOT NULL COMMET '有发票',
+  `cash_back_rate` varchar(64) NOT NULL COMMET '现金返还率(返现率)',
+  `status` int(1) NOT NULL COMMET '状态',
+  `update_time` int(10) NOT NULL COMMET '更新时间',
+  PRIMARY KEY (`id`),
+  KEY `index_status` (`status`),
+  KEY `index_recommend` (`recommend`)
+) ENGINE=MyISAM AUTO_INCREMENT=341 DEFAULT CHARSET=utf8;
+//商家列表分类
+CREATE TABLE `ria_seller_list_cate` (
+  `list_id` int(11) NOT NULL COMMET '列表ID',
+  `cate_id` int(11) NOT NULL COMMET '号',
+  KEY `list_id` (`list_id`),
+  KEY `cate_id` (`cate_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+//设置
+CREATE TABLE `ria_setting` (
+  `name` varchar(100) NOT NULL COMMET '名',
+  `data` text NOT NULL COMMET '数据',
+  KEY `name` (`name`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+//注：有些没有翻译完，也有一些不对，请指教 QQ：841489104 微游
