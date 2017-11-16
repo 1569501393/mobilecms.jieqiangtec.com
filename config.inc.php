@@ -1,8 +1,8 @@
 <?php
 return array (
-  'DB_HOST' => '192.168.1.55',
+  'DB_HOST' => 'localhost',
   'DB_NAME' => 'mobilecms',
-  'DB_PWD' => 'PassWord',
+  'DB_PWD' => 'root',
   'DB_USER' => 'root',
   'DB_PORT' => '3306',
   'DB_PREFIX' => 'cms_',
