@@ -218,7 +218,7 @@ function miao_client($appkey,$appsecret)
 	define('API_CACHETIME','0');  //缓存时间默认为小时   0表示不缓存
 	define('API_CACHEPATH','Runtime/Api59miao_cache'); //缓存目录
 	define('CHARSET','UTF-8');  //编码
-	define('APIURL','http://api.59miao.com/Router/Rest?');  //请求地址		
+	// define('APIURL','http://api.59miao.com/Router/Rest?');  //请求地址
 	define('API_CLEARCACHE','1 23 * *');   //自动清除缓存时间
 	vendor('api59miao.init');				
 	//引入59秒api文件	

@@ -100,8 +100,61 @@ class BaseAction extends Action {
 		$this->assign('iframe',$_REQUEST['iframe']);
 		$def=array(
 			'request'=>$_REQUEST
-		);	
+		);
 		$this->assign('def',json_encode($def));
+
+        // TODO 显示菜单项
+        $id	=	intval($_REQUEST['tag'])==0?6:intval($_REQUEST['tag']);
+        // var_dump($id);
+        $menu  = array();
+        $role_id = D('admin')->where('id='.$_SESSION['admin_info']['id'])->getField('role_id');
+        $node_ids_res = D("access")->where("role_id=".$role_id)->field("node_id")->select();
+
+        $node_ids = array();
+        foreach ($node_ids_res as $row) {
+            array_push($node_ids,$row['node_id']);
+        }
+
+        // var_dump($node_ids);
+        $ids = implode(',', $node_ids);
+        // var_dump($ids);exit;
+        //读取数据库模块列表生成菜单项
+        $node    =   M("node");
+        // $where = "auth_type<>2 AND status=1 AND is_show=0 AND group_id=".$id;
+
+        // 增加在cms_access的条件
+        //如果是超级管理员，则可以执行所有操作
+        if($_SESSION['admin_info']['id'] == 1) {
+//            $where = "auth_type<>2 AND status=1 AND is_show=0 AND group_id=".$id;
+            $where = "auth_type<>2 AND status=1 AND is_show=0 ";
+        }else{
+//            $where = "auth_type<>2 AND status=1 AND is_show=0 AND id in ($ids) AND group_id=".$id;
+            $where = "auth_type<>2 AND status=1 AND is_show=0 AND id in ($ids) ";
+        }
+
+
+        $list	=$node->where($where)->field('id,action,action_name,module,module_name,data')->order('sort DESC')->select();
+//        var_dump($_SESSION['admin_info'],$where,$node->getLastSql());exit;
+        foreach($list as $key=>$action) {
+            $data_arg = array();
+            if ($action['data']){
+                $data_arr = explode('&', $action['data']);
+                foreach ($data_arr as $data_one) {
+                    $data_one_arr = explode('=', $data_one);
+                    $data_arg[$data_one_arr[0]] = $data_one_arr[1];
+                }
+            }
+            $action['url'] = U($action['module'].'/'.$action['action'], $data_arg);
+            if ($action['action']) {
+                $menu[$action['module']]['navs'][] = $action;
+            }
+            $menu[$action['module']]['name']	= $action['module_name'];
+            $menu[$action['module']]['id']	= $action['id'];
+        }
+        // TODO
+//		var_dump($menu);exit;
+        $this->assign('menu',$menu);
+
         
 	}
 	//检查权限
@@ -142,7 +195,7 @@ class BaseAction extends Action {
 		define('API_CACHETIME','0');  //缓存时间默认为小时   0表示不缓存
 		define('API_CACHEPATH','Runtime/Api59miao_cache'); //缓存目录
 		define('CHARSET','UTF-8');  //编码
-		define('APIURL','http://api.59miao.com/Router/Rest?');  //请求地址		
+		// define('APIURL','http://api.59miao.com/Router/Rest?');  //请求地址
 		define('API_CLEARCACHE','1 23 * *');   //自动清除缓存时间
 		vendor('api59miao.init');	
 		$appkey = $this->setting['miao_appkey'];

@@ -12,6 +12,8 @@ class IndexAction extends BaseAction
 {
     public function index()
     {
+//        var_dump($menu);exit;
+        $this->assign('test_name','123');
         $this->display('index');
     }
 	/*当前位置*/

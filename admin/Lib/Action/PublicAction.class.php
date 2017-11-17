@@ -152,7 +152,7 @@ class PublicAction extends BaseAction
  	//验证码
     public function verify(){
     	import("ORG.Util.Image");
-        Image::buildImageVerify(4,1,'gif','50','24');
+        Image::buildImageVerify(4,1,'gif','108','34');
     }
 
 	/*
