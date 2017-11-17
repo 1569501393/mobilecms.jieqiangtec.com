@@ -1,11 +1,11 @@
 <?php
 // +----------------------------------------------------------------------
-// | MobileCms 移动应用软件后台管理系统
+// | JieQiangCms 移动应用软件后台管理系统
 // +----------------------------------------------------------------------
-// | provide by ：phonegap100.com
+// | provide by ：jieqiang.com
 // 
 // +----------------------------------------------------------------------
-// | Author: htzhanglong@foxmail.com
+// | Author: 1569501393@qq.com
 // +----------------------------------------------------------------------
 
 class ArticleCateAction extends BaseAction
@@ -34,9 +34,10 @@ class ArticleCateAction extends BaseAction
     	        $article_cate_list['sub'][$val['pid']][] = $val;
     	    }
     	}
-
+    	// var_dump($article_cate_list);
     	$this->assign('article_cate_list',$article_cate_list);
 		$big_menu = array('javascript:window.top.art.dialog({id:\'add\',iframe:\'?m=ArticleCate&a=add\', title:\''.L('add_cate').'\', width:\'500\', height:\'400\', lock:true}, function(){var d = window.top.art.dialog({id:\'add\'}).data.iframe;var form = d.document.getElementById(\'dosubmit\');form.click();return false;}, function(){window.top.art.dialog({id:\'add\'}).close()});void(0);', L('add_cate'));
+		// var_dump($big_menu);
 		$this->assign('big_menu',$big_menu);
 		$this->display();
     }

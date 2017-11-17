@@ -1,12 +1,15 @@
 <?php
+/*
 // +----------------------------------------------------------------------
-// | MobileCms 移动应用软件后台管理系统
+// | JieQiangCms 街墙内容管理系统
 // +----------------------------------------------------------------------
-// | provide by ：phonegap100.com
-// 
+// | provided by : www.jieqiang.com
 // +----------------------------------------------------------------------
-// | Author: htzhanglong@foxmail.com
+// | Author : 1569501393@qq.com
 // +----------------------------------------------------------------------
+// | @@街墙科技，值得信赖@@
+// +----------------------------------------------------------------------
+*/
 
 /**
  * 基础Action
@@ -41,7 +44,46 @@ class BaseAction extends Action {
 
 		// 顶部菜单
 		$model	=	M("group");
-		$top_menu	=$model->field('id,title')->where('status=1')->order('sort ASC')->select();
+		// $top_menu	=$model->field('id,title')->where('status=1')->order('sort ASC')->select();
+
+		
+		$role_id = D('admin')->where('id='.$_SESSION['admin_info']['id'])->getField('role_id');
+		$node_ids_res = D("access")->where("role_id=".$role_id)->field("node_id")->select();
+		
+		$node_ids = array();
+		foreach ($node_ids_res as $row) {
+			array_push($node_ids,$row['node_id']);
+		}
+
+		// var_dump($node_ids);
+		// 节点id
+		$ids = implode(',', $node_ids);
+		// 增加在cms_access的条件
+		//如果是超级管理员，则可以执行所有操作
+		// $id	=	intval($_REQUEST['tag'])==0?6:intval($_REQUEST['tag']);
+		if($_SESSION['admin_info']['id'] == 1) {
+			$where = "auth_type<>2 AND status=1 AND is_show=0 ";
+		}else{
+			$where = "auth_type<>2 AND status=1 AND is_show=0 AND id in ($ids)";
+		}
+
+		// var_dump($where);		
+		$list	=M("node")->where($where)->Distinct(true)->field('group_id')->order('sort DESC')->select();
+		// var_dump($list);
+		// var_dump(count($list));
+		if (count($list) == 1) {
+			// 分组id
+			$gId = $list[0] ['group_id'];
+			$top_menu	=$model->field('id,title')->where("status=1 AND id = $gId")->order('sort ASC')->select();
+		} else {
+			// 分组id
+			foreach ($list as $key => $value) {
+				$gIds[] = $value['group_id'];
+			}		
+			$gIds = implode(',', $gIds);
+			$top_menu	=$model->field('id,title')->where("status=1 AND id in ($gIds)")->order('sort ASC')->select();
+		}
+		
 		$this->assign('top_menu',$top_menu);
 
 		//获取网站配置信息

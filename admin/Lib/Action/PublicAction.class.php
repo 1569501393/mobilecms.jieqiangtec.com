@@ -1,12 +1,15 @@
 <?php
+/*
 // +----------------------------------------------------------------------
-// | MobileCms 移动应用软件后台管理系统
+// | JieQiangCms 街墙内容管理系统
 // +----------------------------------------------------------------------
-// | provide by ：phonegap100.com
-// 
+// | provided by : www.jieqiang.com
 // +----------------------------------------------------------------------
-// | Author: htzhanglong@foxmail.com
+// | Author : 1569501393@qq.com
 // +----------------------------------------------------------------------
+// | @@街墙科技，值得信赖@@
+// +----------------------------------------------------------------------
+*/
 
 class PublicAction extends BaseAction
 {
@@ -14,6 +17,7 @@ class PublicAction extends BaseAction
 	public function menu(){
 		//显示菜单项
 		$id	=	intval($_REQUEST['tag'])==0?6:intval($_REQUEST['tag']);
+		// var_dump($id);
 		$menu  = array();
 		$role_id = D('admin')->where('id='.$_SESSION['admin_info']['id'])->getField('role_id');
 		$node_ids_res = D("access")->where("role_id=".$role_id)->field("node_id")->select();
@@ -22,9 +26,23 @@ class PublicAction extends BaseAction
 		foreach ($node_ids_res as $row) {
 			array_push($node_ids,$row['node_id']);
 		}
+
+		// var_dump($node_ids);
+		$ids = implode(',', $node_ids);
+		// var_dump($ids);exit;
 		//读取数据库模块列表生成菜单项
 		$node    =   M("node");
-		$where = "auth_type<>2 AND status=1 AND is_show=0 AND group_id=".$id;
+		// $where = "auth_type<>2 AND status=1 AND is_show=0 AND group_id=".$id;
+
+		// 增加在cms_access的条件
+		//如果是超级管理员，则可以执行所有操作
+		if($_SESSION['admin_info']['id'] == 1) {
+			$where = "auth_type<>2 AND status=1 AND is_show=0 AND group_id=".$id;
+		}else{
+			$where = "auth_type<>2 AND status=1 AND is_show=0 AND id in ($ids) AND group_id=".$id;
+		}
+
+		// var_dump($where);		
 		$list	=$node->where($where)->field('id,action,action_name,module,module_name,data')->order('sort DESC')->select();
 		foreach($list as $key=>$action) {
 			$data_arg = array();
@@ -66,7 +84,7 @@ class PublicAction extends BaseAction
 		$this->assign('security_info',$security_info);
         $disk_space = @disk_free_space(".")/pow(1024,2);
 		$server_info = array(
-		    '程序版本'=>NOW_VERSION.'[<a href="http://bbs.phonegap100.com/forum.php?mod=forumdisplay&fid=62" target="_blank">查看最新版本</a>]',		
+		    '程序版本'=>NOW_VERSION.'[<a href="http://bbs.JieQiang.com/forum.php?mod=forumdisplay&fid=62" target="_blank">查看最新版本</a>]',		
             '操作系统'=>PHP_OS,
             '运行环境'=>$_SERVER["SERVER_SOFTWARE"],	
             '上传附件限制'=>ini_get('upload_max_filesize'),
@@ -120,6 +138,7 @@ class PublicAction extends BaseAction
 		$this->assign('set',$this->setting);
 		$this->display();
 	}
+	
 	//退出登录
 	public function logout()
 	{
@@ -135,7 +154,8 @@ class PublicAction extends BaseAction
     	import("ORG.Util.Image");
         Image::buildImageVerify(4,1,'gif','50','24');
     }
-/*
+
+	/*
 	 * 清除缓存
 	 * */
     function clearCache()

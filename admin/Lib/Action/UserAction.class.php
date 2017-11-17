@@ -1,16 +1,112 @@
 <?php
 // +----------------------------------------------------------------------
-// | MobileCms 移动应用软件后台管理系统
+// | JieQiangCms 移动应用软件后台管理系统
 // +----------------------------------------------------------------------
-// | provide by ：phonegap100.com
+// | provide by ：jieqiang.com
 // 
 // +----------------------------------------------------------------------
-// | Author: htzhanglong@foxmail.com
+// | Author: 1569501393@qq.com
 // +----------------------------------------------------------------------
+// 后台会员管理
 class UserAction extends BaseAction{
+	// 附件列表
+	public function apply(){
+		// var_dump($_SESSION);
+        // $mod=D("user"); 
+        $mod=D("File"); 
+        $userMod=D("User"); 
+        $pagesize=10;        
+        import("ORG.Util.Page");
+		$where=" 1=1 ";
+		if(isset($_REQUEST['keyword'])){
+			$keys = $_REQUEST['keyword'];
+			$this->assign('keyword',$keys);
+			$where.=" and fName like '%$keys%'";
+		}
+		$count=$mod->where($where)->count();		
+		$p = new Page($count,$pagesize);		
+		// $list=$mod->where($where)->order("last_time desc")->limit($p->firstRow.','.$p->listRows)->select();
+		// $list=$mod->where($where)->order("fId desc")->limit($p->firstRow.','.$p->listRows)->select();
+		
+		$list=$mod->where($where)->order("fId desc")->limit($p->firstRow.','.$p->listRows)->select();
+		$key = 1;
+		foreach($list as $k=>$val){
+			$list[$k]['key'] = ++$p->firstRow;
+			$list[$k]['name'] = $userMod->field('name')->where('id='.$val['fUid'])->find();
+			$list[$k]['vAdminer'] = D('Admin')->field('user_name')->where('id in ('.$val['vAdminer'].')')->select();
+			// var_dump($list[$k]['vAdminer']);
+			foreach ($list[$k]['vAdminer'] as $v){
+				$list[$k]['vAdminers'] .= $v['user_name']."  ";
+				// $list[$k]['vAdminers'][] = $v['user_name']." ";
+			}
+			// $adminers = implode(',', $list[$k]['vAdminers']);
+			// var_dump($list[$k]['vAdminers']);
+		}
+
+		$page=$p->show();  
+//		var_dump($list);
+		$this->assign('list',$list);
+		$this->assign('page',$page);
+		$this->display();
+	}
+
+	// 附件编辑
+	public function applyEdit(){
+        if (isset($_POST['dosubmit'])) {
+			$mod = D('File');		
+			// $user_data = $mod->create();			
+			// 审核状态
+			$user_data['fStatus']=$_REQUEST['status'];
+			if ($_REQUEST['status'] == 1) {
+				// 单元被占领 0
+				$user_data['eState']= 0;
+				$result_info=D('Element')->where("eId=". $_POST['eId'])->save($user_data);
+			}
+			// 审核时间
+			$user_data['vTime']=time();
+			// 审核员
+			$user_data['vAdmin']=$_SESSION['admin_info']['user_name'];
+			// $result_info=$mod->where("fId=". $user_data['id'])->save($user_data);
+			$result_info=$mod->where("fId=". $_POST['id'])->save($user_data);
+			if(false !== $result_info){
+				$this->success(L('operation_success'), '', '', 'edit');
+			}else{				
+				$this->success(L('operation_failure'));
+			}
+		} else {
+			$mod = D('File');		
+			if (isset($_GET['id'])) {
+				$id = isset($_GET['id']) && intval($_GET['id']) ? intval($_GET['id']) : $this->error('请选择要编辑的链接');
+			}
+			$user = $mod->where('fId='. $id)->find();	
+			// var_dump($user);	
+			$this->assign('info', $user);
+			$this->assign('show_header', false);
+			$this->display();
+		}
+	}
+
+
+	// 附件删除
+	public function applyDelete(){
+        $file_mod = D('File');
+		if(!isset($_POST['id']) || empty($_POST['id'])) {
+            $this->error('请选择要删除的数据！');
+		}	
+		if( isset($_POST['id'])&&is_array($_POST['id']) ){			
+			foreach( $_POST['id'] as $val ){
+				$file_mod->delete($val);				
+			}			
+		}else{
+			$id = intval($_POST['id']);			
+		    $file_mod->where('id='.$id)->delete();	
+		}
+		$this->success(L('operation_success'));
+	}
+
 	public function index(){
         $mod=D("user"); 
-        $pagesize=20;        
+        $pagesize=10;        
         import("ORG.Util.Page");
 		$where=" 1=1 ";
 		if(isset($_REQUEST['keyword'])){
@@ -20,7 +116,8 @@ class UserAction extends BaseAction{
 		}
 		$count=$mod->where($where)->count();		
 		$p = new Page($count,$pagesize);		
-		$list=$mod->where($where)->order("last_time desc")->limit($p->firstRow.','.$p->listRows)->select();
+		// $list=$mod->where($where)->order("last_time desc")->limit($p->firstRow.','.$p->listRows)->select();
+		$list=$mod->where($where)->order("id desc")->limit($p->firstRow.','.$p->listRows)->select();
 		$page=$p->show();  
 		$this->assign('list',$list);
 		$this->assign('page',$page);
@@ -92,4 +189,16 @@ class UserAction extends BaseAction{
 		}
 		$this->success(L('operation_success'));
     }
+
+    //修改状态
+	function status()
+	{
+		$article_mod = D('File');
+		$id 	= intval($_REQUEST['id']);
+		$type 	= trim($_REQUEST['type']);
+		$sql 	= "update ".C('DB_PREFIX')."file set fStatus=1 where id='$id'";
+		$res 	= $article_mod->execute($sql);
+		$values = $article_mod->field("id,".$type)->where('id='.$id)->find();
+		$this->ajaxReturn($values[$type]);
+	}
 }
