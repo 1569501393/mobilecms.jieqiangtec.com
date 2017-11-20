@@ -1,0 +1,84 @@
+/*布局*/
+.layui-body {
+    overflow: hidden;
+}
+.layui-body .layui-tab {
+    margin: 0;
+}
+.layui-body .layui-tab-title {
+    z-index: 999;
+    background-color: #fff;
+}
+.layui-body .layui-tab-title li:first-child i.layui-tab-close {
+    display: none;
+}
+.layui-body .layui-tab-content {
+    padding: 0;
+}
+.layui-body .layui-tab-item {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 40px;
+    bottom: 0;
+}
+.layui-body iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+.layui-footer {
+    text-align: center;
+}
+/*重写表label*/
+/*.layui-form-pane .layui-form-label {
+    width: 80px;
+}
+.layui-form-pane .layui-input-block {
+    margin-left: 80px;
+}*/
+/*自定义样式*/
+.u-fullwidth {
+    width: 100%;
+}
+.u-page-body {
+    padding: 15px;
+    position: relative;
+}
+.u-noresize {
+    resize: none;
+}
+.u-article-face {
+    border: 1px solid #e6e6e6;
+    height: 190px;
+    position: relative;
+    text-align: center;
+}
+.u-article-face img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.u-article-face #btn-thumb {
+    position: absolute;
+    top: 75px;
+    left: 81px;
+    background-color: rgba(255, 255, 255, 0.5);
+}
+.u-article-face #del-thumb {
+    position: absolute;
+    border-top: none;
+    border-right: none;
+    right: 0;
+    top: 0;
+    background-color: rgba(255, 255, 255, 0.5);
+}
+.u-tags {
+    border: 1px solid #e6e6e6;
+    padding: 5px 0;
+    height: 113px;
+    overflow-y: scroll;
+}
+.u-tags .layui-form-checkbox span {
+    width: 60px;
+}

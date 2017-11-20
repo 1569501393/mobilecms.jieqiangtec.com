@@ -1,55 +1,73 @@
-<include file="Public:header" />
-<div class="pad-lr-10">
-    <form id="myform" name="myform" action="{:u('Admin/delete')}" method="post" onsubmit="return check();">
-    <div class="table-list">
-    <table width="100%" cellspacing="0">
-        <thead>
-            <tr>
-                <th width=60>{:L('id')}</th>
-                <th width=30><input type="checkbox" value="" id="check_box" onclick="selectall('id[]');"></th>
-                <th width=100>{:L('user_name')}</th>
-                <th>{:L('role_id')}</th>
-      			<th>{:L('add_time')} :</th>
-                <th>{:L('last_time')}</th>
-                <th width=60>{:L('status')}</th>
-                <th width=60>{:L('operational')}</th>
-            </tr>
-        </thead>
-    	<tbody>
-        <volist name="admin_list" id="val" >
-        <tr>
-        	<td align="center">{$val.id}</td>
-            <td align="center"><input type="checkbox" value="{$val.id}" name="id[]" <if condition="$val['id'] eq '1'">disabled="disabled"</if>></td>            
-            <td align="center">{$val.user_name}</td>
-            <td align="center">{$val.role_name}</td>
-     		<td align="center">{$val.add_time|date='Y-m-d H:i:s',###}</td>
-            <td align="center">{$val.last_time|date='Y-m-d H:i:s',###}</td>
-            <td align="center" onclick="status({$val.id},'status')" id="status_{$val.id}"><img src="__ROOT__/statics/images/status_{$val.status}.gif" /></td>
-            <td align="center"><a href="javascript:edit({$val.id},'{$val.user_name}')">编辑</a></td>
-        </tr>
-        </volist>
-    	</tbody>
-    </table>
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>管理员管理</title>
+    <link href="__ROOT__/statics/admin/Plugins/layui/css/layui.css" rel="stylesheet" />
+    <link rel="stylesheet" href="__ROOT__/statics/admin/css/common.css">
+</head>
+<body class="u-page-body">
 
-    <div class="btn">
-		<label for="check_box" style="float:left;">{$Think.lang.select_all}/{$Think.lang.cancel}</label>
-		<input type="submit" class="button" name="dosubmit" value="{$Think.lang.delete}" onclick="return confirm('{$Think.lang.sure_delete}')" style="float:left;margin-left:10px;"/>
-		<div id="pages">{$page}</div>
-    </div>
-    </div>
-    </form>
-</div>
-<script language="javascript">
-function edit(id, name) {
-	var lang_edit = "{$Think.lang.edit}";
-	window.top.art.dialog({id:'edit'}).close();
-	window.top.art.dialog({title:lang_edit+'--'+name,id:'edit',iframe:'?m=Admin&a=edit&id='+id,width:'480',height:'250'}, function(){var d = window.top.art.dialog({id:'edit'}).data.iframe;d.document.getElementById('dosubmit').click();return false;}, function(){window.top.art.dialog({id:'edit'}).close()});
-}
-function status(id,type){
-    $.get("{:u('Admin/status')}", { id: id, type: type }, function(jsondata){
-		var return_data  = eval("("+jsondata+")");
-		$("#"+type+"_"+id+" img").attr('src', '__ROOT__/statics/images/status_'+return_data.data+'.gif');
-	}); 
-}
+<button class="layui-btn" id="add">添加管理员</button>
+<table class="layui-table" lay-size="sm">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>账号</th>
+        <th>角色</th>
+        <th>描述</th>
+        <th>添加时间</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <foreach name="admin_list" item="vo">
+        <tr>
+            <td>{$vo.id}</td>
+            <td>{$vo.user_name}</td>
+            <td>{$vo['role_name']}</td>
+            <td>{$vo.desc}</td>
+            <td>{:date('Y-m-d H:i:s', $vo['add_time'])}</td>
+            <td><a class="layui-btn layui-btn-mini edit" data-url="{:U('Admin/edit', 'id='.$vo['id'])}">编辑</a></td>
+        </tr>
+    </foreach>
+    </tbody>
+</table>
+
+</body>
+<script src="__ROOT__/statics/admin/plugins/layui/layui.js"></script>
+<script>
+    layui.use(['layer'], function () {
+        var layer = layui.layer,
+            $ = layui.jquery;
+
+        //添加角色
+        $('#add').click(function () {
+            layer.open({
+                type: 2,
+                title: '添加管理员',
+                scrollbar: false,
+                shade: 0.5,
+                area: ['500px', '440px'],
+                content: '{:U("adminAdd")}'
+            });
+        });
+
+        //编辑角色
+        $('.edit').click(function () {
+            var url = $(this).data('url');
+            layer.open({
+                type: 2,
+                title: '编辑管理员',
+                scrollbar: false,
+                shade: 0.5,
+                area: ['500px', '440px'],
+                content: url
+            });
+        });
+
+    });
 </script>
-<include file="Public:footer" />
+</html>

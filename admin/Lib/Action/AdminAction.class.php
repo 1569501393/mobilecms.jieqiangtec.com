@@ -77,7 +77,8 @@ class AdminAction extends BaseAction
 			//print_r($count);exit;
 			if ($_POST['password']) {
 			    if($_POST['password'] != $_POST['repassword']){
-				    $this->error('两次输入的密码不相同');
+				    // $this->error('两次输入的密码不相同');
+                    $this->echoJson(0,'两次输入的密码不相同') ;
 			    }
 			    $_POST['password'] = md5($_POST['password']);
 			} else {
@@ -85,15 +86,19 @@ class AdminAction extends BaseAction
 			}
 			unset($_POST['repassword']);
 			if (false === $admin_mod->create()) {
-				$this->error($admin_mod->getError());
+//				$this->error($admin_mod->getError());
+                $this->echoJson(0,$admin_mod->getError()) ;
 			}
 
 			$result = $admin_mod->save();
-			if(false !== $result){
+//			 var_dump($result,$admin_mod->getLastSql(),$_REQUEST,$_GET,$_POST);exit;
+            false !== $result ? $this->echoJson(0) : $this->echoJson(1);
+
+			/*if(false !== $result){
 				$this->success(L('operation_success'), '', '', 'edit');
 			}else{
 				$this->error(L('operation_failure'));
-			}
+			}*/
 		}else{
 			if( isset($_GET['id']) ){
 				$id = isset($_GET['id']) && intval($_GET['id']) ? intval($_GET['id']) : $this->error('参数错误');
@@ -163,5 +168,21 @@ class AdminAction extends BaseAction
 		$values = $admin_mod->where('id='.$id)->find();
 		$this->ajaxReturn($values[$type]);
 	}
+
+
+    /**
+     * ajax返回固定格式的json
+     * @param int $errcode 错误代码
+     * @param string $errmsg 错误消息
+     * @param array $data 返回的数据
+     */
+    protected function echoJson($errcode, $errmsg = '', $data = array())
+    {
+        $this->ajaxReturn(array(
+            'errcode' => $errcode,
+            'errmsg' => $errmsg,
+            'data' => $data,
+        ));
+    }
 }
 ?>
